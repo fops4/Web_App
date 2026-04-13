@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keyce Informatique – École d'informatique BAC+2 au BAC+5</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #060a10;
+      --surface: #0d1420;
+      --surface2: #121b2b;
+      --accent: #00e5ff;
+      --accent2: #7b61ff;
+      --accent3: #00ff94;
+      --text: #e8edf5;
+      --muted: #7a8699;
+      --border: rgba(0,229,255,0.12);
+      --glow: rgba(0,229,255,0.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(6,10,16,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex; gap: 2.4rem; list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-family: 'DM Mono', monospace; font-size: 0.78rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      background: var(--accent); color: var(--bg);
+      padding: 0.55rem 1.4rem; border-radius: 4px;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.82rem; letter-spacing: 0.04em;
+      text-decoration: none; text-transform: uppercase;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover {
+      box-shadow: 0 0 24px var(--glow);
+      transform: translateY(-1px);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      padding: 10rem 4rem 6rem;
+      position: relative; overflow: hidden;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    .hero-glow {
+      position: absolute; top: -20%; left: -10%;
+      width: 70%; height: 70%;
+      background: radial-gradient(ellipse, rgba(0,229,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-glow2 {
+      position: absolute; bottom: -20%; right: -5%;
+      width: 50%; height: 60%;
+      background: radial-gradient(ellipse, rgba(123,97,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.6rem;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: clamp(3.2rem, 8vw, 6.5rem);
+      line-height: 0.95; letter-spacing: -0.04em;
+      max-width: 14ch;
+      opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      margin-top: 2rem; max-width: 52ch;
+      font-size: 1.05rem; color: var(--muted); line-height: 1.7;
+      opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
+    }
+
+    .hero-actions {
+      margin-top: 3rem; display: flex; gap: 1.2rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s 0.65s forwards;
+    }
+
+    .btn-primary {
+      background: var(--accent); color: var(--bg);
+      padding: 0.9rem 2.2rem; border-radius: 4px;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.9rem; text-decoration: none; text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: box-shadow 0.25s, transform 0.2s;
+    }
+    .btn-primary:hover { box-shadow: 0 0 32px var(--glow); transform: translateY(-2px); }
+
+    .btn-ghost {
+      border: 1px solid var(--border); color: var(--text);
+      padding: 0.9rem 2.2rem; border-radius: 4px;
+      font-family: 'Syne', sans-serif; font-weight: 600;
+      font-size: 0.9rem; text-decoration: none; text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero-stats {
+      position: absolute; right: 4rem; bottom: 6rem;
+      display: flex; flex-direction: column; gap: 2rem;
+      opacity: 0; animation: fadeLeft 0.8s 0.8s forwards;
+    }
+    .stat {
+      text-align: right;
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 2.8rem; letter-spacing: -0.04em;
+      color: var(--accent); line-height: 1;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    }
+
+    /* ─── TICKER ─── */
+    .ticker-wrap {
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 0;
+      background: var(--surface);
+    }
+    .ticker {
+      display: flex; width: max-content;
+      animation: ticker 20s linear infinite;
+    }
+    .ticker span {
+      font-family: 'DM Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 0 3rem; color: var(--muted);
+      white-space: nowrap;
+    }
+    .ticker span b { color: var(--accent); font-weight: 400; }
+
+    /* ─── FORMATIONS ─── */
+    section { padding: 6rem 4rem; }
+
+    .section-label {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: -0.03em; line-height: 1.05;
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      color: var(--muted); max-width: 55ch;
+      margin-bottom: 3.5rem; font-size: 1rem;
+    }
+
+    /* ─── FORMATION CARDS ─── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s;
+      cursor: pointer;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s;
+    }
+    .card:hover { border-color: rgba(0,229,255,0.3); transform: translateY(-4px); }
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-level {
+      display: inline-block;
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.2);
+      padding: 0.2rem 0.7rem; border-radius: 3px;
+      margin-bottom: 1.2rem;
+    }
+
+    .card h3 {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1.15rem; margin-bottom: 0.8rem; letter-spacing: -0.02em;
+    }
+
+    .card p {
+      font-size: 0.88rem; color: var(--muted); line-height: 1.65;
+    }
+
+    .card-icon {
+      position: absolute; right: 1.5rem; top: 1.8rem;
+      font-size: 2rem; opacity: 0.15;
+    }
+
+    /* ─── DOMAINES BENTO ─── */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: auto;
+      gap: 1.2rem;
+    }
+
+    .bento-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem 1.8rem;
+      position: relative; overflow: hidden;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+    .bento-item:hover { border-color: rgba(0,229,255,0.3); transform: translateY(-3px); }
+
+    .bento-item:nth-child(1) { grid-column: span 3; grid-row: span 2; }
+    .bento-item:nth-child(2) { grid-column: span 3; }
+    .bento-item:nth-child(3) { grid-column: span 3; }
+    .bento-item:nth-child(4) { grid-column: span 2; }
+    .bento-item:nth-child(5) { grid-column: span 2; }
+    .bento-item:nth-child(6) { grid-column: span 2; }
+
+    .bento-emoji {
+      font-size: 2.4rem; margin-bottom: 1rem; display: block;
+    }
+    .bento-item h3 {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1.25rem; margin-bottom: 0.6rem; letter-spacing: -0.02em;
+    }
+    .bento-item p {
+      font-size: 0.88rem; color: var(--muted); line-height: 1.6;
+    }
+
+    .bento-item:first-child {
+      background: linear-gradient(135deg, var(--surface) 60%, rgba(0,229,255,0.05));
+    }
+    .bento-item:first-child h3 { font-size: 1.6rem; }
+
+    /* ─── CHIFFRES ─── */
+    .numbers-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .numbers-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0; text-align: center;
+    }
+    .number-item {
+      padding: 3.5rem 2rem;
+      border-right: 1px solid var(--border);
+    }
+    .number-item:last-child { border-right: none; }
+    .number-val {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 3.5rem; letter-spacing: -0.05em;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .number-label {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    }
+
+    /* ─── CAMPUS ─── */
+    .campus-list {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem; margin-top: 2rem;
+    }
+    .campus-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.4rem 1.6rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .campus-card:hover {
+      border-color: rgba(0,229,255,0.3);
+      box-shadow: 0 4px 24px rgba(0,229,255,0.06);
+    }
+    .campus-card .city {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1.1rem; margin-bottom: 0.3rem;
+    }
+    .campus-card .region {
+      font-size: 0.8rem; color: var(--muted);
+      font-family: 'DM Mono', monospace; letter-spacing: 0.08em;
+    }
+    .campus-dot {
+      display: inline-block; width: 7px; height: 7px;
+      border-radius: 50%; background: var(--accent3);
+      box-shadow: 0 0 8px var(--accent3);
+      margin-right: 0.5rem; vertical-align: middle;
+    }
+
+    /* ─── POURQUOI ─── */
+    .why-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+      align-items: center;
+    }
+    .why-visual {
+      position: relative; height: 420px;
+    }
+    .why-block {
+      position: absolute;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.4rem 1.6rem;
+    }
+    .why-block:nth-child(1) { top: 0; left: 0; right: 15%; }
+    .why-block:nth-child(2) { top: 35%; left: 10%; right: 0; }
+    .why-block:nth-child(3) { top: 70%; left: 0; right: 20%; }
+    .why-block-title {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1rem; margin-bottom: 0.4rem;
+    }
+    .why-block p { font-size: 0.82rem; color: var(--muted); }
+
+    .why-items { display: flex; flex-direction: column; gap: 1.8rem; }
+    .why-item { display: flex; gap: 1.2rem; }
+    .why-num {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 2rem; color: var(--accent); opacity: 0.25;
+      line-height: 1; min-width: 2.5ch;
+    }
+    .why-item-content h4 {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1rem; margin-bottom: 0.4rem;
+    }
+    .why-item-content p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+    /* ─── CTA FINAL ─── */
+    .cta-section {
+      text-align: center; padding: 8rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .cta-glow {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,229,255,0.06) 0%, transparent 70%);
+    }
+    .cta-section h2 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      letter-spacing: -0.04em; max-width: 16ch;
+      margin: 0 auto 1.5rem; line-height: 1;
+    }
+    .cta-section p {
+      color: var(--muted); max-width: 45ch;
+      margin: 0 auto 2.5rem; font-size: 1rem;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 4rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--surface);
+    }
+    .footer-logo {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.1rem; color: var(--text); text-decoration: none;
+    }
+    .footer-logo span { color: var(--accent); }
+    .footer-info {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+      text-align: center;
+    }
+    .footer-links {
+      display: flex; gap: 2rem;
+    }
+    .footer-links a {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeLeft {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 6px var(--accent3); }
+      50%       { box-shadow: 0 0 16px var(--accent3), 0 0 28px var(--accent3); }
+    }
+    .campus-dot { animation: pulse-dot 2.5s ease-in-out infinite; }
+
+    /* scroll reveal */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1.5rem; }
+      .hero { padding: 8rem 1.5rem 4rem; }
+      .hero-stats { display: none; }
+      .numbers-grid { grid-template-columns: 1fr 1fr; }
+      .number-item:nth-child(2) { border-right: none; }
+      .why-grid { grid-template-columns: 1fr; }
+      .why-visual { display: none; }
+      .bento { grid-template-columns: 1fr; }
+      .bento-item:nth-child(n) { grid-column: span 1 !important; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="#" class="nav-logo">Keyce <span>Info</span></a>
+  <ul class="nav-links">
+    <li><a href="#formations">Formations</a></li>
+    <li><a href="#domaines">Domaines</a></li>
+    <li><a href="#campus">Campus</a></li>
+    <li><a href="#pourquoi">Pourquoi nous</a></li>
+  </ul>
+  <a href="#candidater" class="nav-cta">Candidater</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <p class="hero-tag">// Keyce Informatique · Collège de Paris · RNCP</p>
+  <h1>Forge ton <em>avenir</em> dans le numérique.</h1>
+  <p class="hero-sub">
+    Du BAC+2 au BAC+5, en initial ou en alternance. Keyce Informatique te prépare 
+    aux métiers du développement, des réseaux, de la cybersécurité et de l'IA — 
+    avec des certifications reconnues par l'État.
+  </p>
+  <div class="hero-actions">
+    <a href="#formations" class="btn-primary">Découvrir les formations</a>
+    <a href="#campus" class="btn-ghost">Nos campus</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">8+</div>
+      <div class="stat-label">Campus en France</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">75%</div>
+      <div class="stat-label">De cours pratiques</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Bac+5</div>
+      <div class="stat-label">Niveau max certifié</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TICKER ─── -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>Développement Web <b>·</b></span>
+    <span>Cybersécurité <b>·</b></span>
+    <span>Intelligence Artificielle <b>·</b></span>
+    <span>Administration Réseau <b>·</b></span>
+    <span>Big Data <b>·</b></span>
+    <span>Cloud Computing <b>·</b></span>
+    <span>Réalité Virtuelle <b>·</b></span>
+    <span>IoT <b>·</b></span>
+    <span>Blockchain <b>·</b></span>
+    <span>Développement Web <b>·</b></span>
+    <span>Cybersécurité <b>·</b></span>
+    <span>Intelligence Artificielle <b>·</b></span>
+    <span>Administration Réseau <b>·</b></span>
+    <span>Big Data <b>·</b></span>
+    <span>Cloud Computing <b>·</b></span>
+    <span>Réalité Virtuelle <b>·</b></span>
+    <span>IoT <b>·</b></span>
+    <span>Blockchain <b>·</b></span>
+  </div>
+</div>
+
+<!-- ─── FORMATIONS ─── -->
+<section id="formations">
+  <p class="section-label reveal">// nos programmes</p>
+  <h2 class="section-title reveal">Des formations du BAC+2<br>au BAC+5</h2>
+  <p class="section-sub reveal">
+    Certifiées RNCP, nos formations allient théorie et pratique professionnelle 
+    avec des cours réactualisés chaque année selon les exigences du marché.
+  </p>
+
+  <div class="cards-grid">
+    <div class="card reveal">
+      <span class="card-icon">💼</span>
+      <div class="card-level">BTS · BAC+2</div>
+      <h3>BTS Services Informatiques aux Organisations</h3>
+      <p>Socle technique pour intégrer le marché ou poursuivre en bachelor. Réseaux, développement, support aux utilisateurs.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-icon">🖥️</span>
+      <div class="card-level">Bachelor · BAC+3 · RNCP niv.6</div>
+      <h3>Coordinateur de projet – Option DEV</h3>
+      <p>Concevoir, développer et piloter des projets applicatifs en coordonnant des équipes techniques.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-icon">🌐</span>
+      <div class="card-level">Bachelor · BAC+3 · RNCP niv.6</div>
+      <h3>Coordinateur de projet – Option INFRA</h3>
+      <p>Concevoir et déployer des infrastructures sécurisées : réseaux, systèmes, cybersécurité et continuité de service.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-icon">🤖</span>
+      <div class="card-level">Mastère · BAC+5 · RNCP niv.7</div>
+      <h3>Expert en Systèmes d'Information</h3>
+      <p>Analyse, architecture et gouvernance des SI d'entreprise. Classé 12e meilleur Mastère IT de France (Eduniversal 2021).</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-icon">🔐</span>
+      <div class="card-level">Mastère · BAC+5 · RNCP niv.7</div>
+      <h3>Expert en Cybersécurité</h3>
+      <p>Audit, protection et réponse aux incidents. Plus de 300 heures de cybersécurité réparties sur 5 ans.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-icon">🌍</span>
+      <div class="card-level">Mobilité internationale</div>
+      <h3>Parcours International</h3>
+      <p>Année complète, stages internationaux ou voyage d'études. Profitez du réseau mondial du Collège de Paris.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DOMAINES ─── -->
+<section id="domaines" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <p class="section-label reveal">// spécialités</p>
+  <h2 class="section-title reveal">Domaines d'expertise</h2>
+  <p class="section-sub reveal">Des compétences techniques et opérationnelles au cœur des besoins des entreprises.</p>
+
+  <div class="bento reveal">
+    <div class="bento-item">
+      <span class="bento-emoji">💻</span>
+      <h3>Développement Informatique</h3>
+      <p>Web, mobile, logiciel. Maîtrise des langages modernes et des frameworks du marché. Projets réels commandités par des entreprises dès la 1ère année. Plus de 75% de cours techniques concrets.</p>
+    </div>
+    <div class="bento-item">
+      <span class="bento-emoji">🛡️</span>
+      <h3>Cybersécurité</h3>
+      <p>Audit, pentest, SOC. Certification CEH incluse. 300h+ sur 5 ans pour former des experts opérationnels.</p>
+    </div>
+    <div class="bento-item">
+      <span class="bento-emoji">🧠</span>
+      <h3>Intelligence Artificielle</h3>
+      <p>Machine Learning, Deep Learning, IA générative. Maîtrise des outils et frameworks de l'IA moderne.</p>
+    </div>
+    <div class="bento-item">
+      <span class="bento-emoji">☁️</span>
+      <h3>Cloud & Infra</h3>
+      <p>AWS, Azure, virtualisation et gestion des SI d'entreprise.</p>
+    </div>
+    <div class="bento-item">
+      <span class="bento-emoji">📊</span>
+      <h3>Big Data</h3>
+      <p>Collecte, traitement et analyse de grands volumes de données.</p>
+    </div>
+    <div class="bento-item">
+      <span class="bento-emoji">🥽</span>
+      <h3>Réalité Virtuelle</h3>
+      <p>Développement d'expériences immersives XR et métavers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CHIFFRES ─── -->
+<section class="numbers-section">
+  <div class="numbers-grid">
+    <div class="number-item reveal">
+      <div class="number-val">1995</div>
+      <div class="number-label">Année de fondation</div>
+    </div>
+    <div class="number-item reveal">
+      <div class="number-val">8+</div>
+      <div class="number-label">Campus en France</div>
+    </div>
+    <div class="number-item reveal">
+      <div class="number-val">#12</div>
+      <div class="number-label">Mastère IT France 2021</div>
+    </div>
+    <div class="number-item reveal">
+      <div class="number-val">Bac+5</div>
+      <div class="number-label">Niveau maximal RNCP</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CAMPUS ─── -->
+<section id="campus">
+  <p class="section-label reveal">// présence nationale & internationale</p>
+  <h2 class="section-title reveal">Nos campus</h2>
+  <p class="section-sub reveal">
+    8 campus stratégiquement situés pour te rapprocher des entreprises locales 
+    et des opportunités de stages et d'alternance.
+  </p>
+
+  <div class="campus-list reveal">
+    <div class="campus-card">
+      <div class="city"><span class="campus-dot"></span>Montpellier</div>
+      <div class="region">690 rue Alfred Nobel – Siège principal</div>
+    </div>
+    <div class="campus-card">
+      <div class="city"><span class="campus-dot"></span>Marseille</div>
+      <div class="region">Bouches-du-Rhône · PACA</div>
+    </div>
+    <div class="campus-card">
+      <div class="city"><span class="campus-dot"></span>Toulouse</div>
+      <div class="region">Pont Jumeaux · Haute-Garonne</div>
+    </div>
+    <div class="campus-card">
+      <div class="city"><span class="campus-dot"></span>Nîmes</div>
+      <div class="region">Quartier Ville Active · Gard</div>
+    </div>
+    <div class="campus-card">
+      <div class="city"><span class="campus-dot"></span>Lyon</div>
+      <div class="region">Auvergne-Rhône-Alpes</div>
+    </div>
+    <div class="campus-card">
+      <div class="city"><span class="campus-dot"></span>Martinique</div>
+      <div class="region">Campus Antilles</div>
+    </div>
+    <div class="campus-card">
+      <div class="city"><span class="campus-dot"></span>Guadeloupe</div>
+      <div class="region">Campus Antilles</div>
+    </div>
+    <div class="campus-card">
+      <div class="city"><span class="campus-dot"></span>Casablanca</div>
+      <div class="region">Maroc · International</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── POURQUOI ─── -->
+<section id="pourquoi" style="background: var(--surface); border-top:1px solid var(--border);">
+  <p class="section-label reveal">// nos atouts</p>
+  <h2 class="section-title reveal">Pourquoi choisir Keyce ?</h2>
+
+  <div class="why-grid">
+    <div class="why-visual reveal">
+      <div class="why-block">
+        <div class="why-block-title">Alternance disponible dès Bac+2</div>
+        <p>Contrat d'apprentissage ou de professionnalisation pour financer tes études.</p>
+      </div>
+      <div class="why-block">
+        <div class="why-block-title">Certifications officielles incluses</div>
+        <p>CEH, RNCP niv. 6 & 7 — des diplômes reconnus par les entreprises.</p>
+      </div>
+      <div class="why-block">
+        <div class="why-block-title">Réseau Collège de Paris</div>
+        <p>Mobilité internationale, partenariats avec des universités étrangères.</p>
+      </div>
+    </div>
+
+    <div class="why-items reveal">
+      <div class="why-item">
+        <div class="why-num">01</div>
+        <div class="why-item-content">
+          <h4>Pédagogie 100% orientée métier</h4>
+          <p>Plus de 75% de cours pratiques dès la 1ère année. Les programmes sont réactualisés chaque année avec les dernières technologies.</p>
+        </div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">02</div>
+        <div class="why-item-content">
+          <h4>Admissions hors Parcoursup</h4>
+          <p>Dossier + entretien de motivation. Accessible à tous les niveaux (post-bac, bac+2, bac+3) selon la formation visée.</p>
+        </div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">03</div>
+        <div class="why-item-content">
+          <h4>Accessibilité & inclusion</h4>
+          <p>Locaux et formations accessibles aux personnes en situation de handicap. Un référent handicap dédié sur chaque campus.</p>
+        </div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">04</div>
+        <div class="why-item-content">
+          <h4>Ouverture internationale</h4>
+          <p>Années d'études à l'étranger, stages internationaux et accueil d'apprenants du monde entier via le Collège de Paris.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section class="cta-section" id="candidater">
+  <div class="cta-glow"></div>
+  <p class="section-label" style="text-align:center">// prêt à te lancer ?</p>
+  <h2 class="section-title reveal" style="text-align:center">Rejoins la prochaine<br><em style="font-style:normal;color:var(--accent)">génération</em> du numérique.</h2>
+  <p class="reveal">Candidature en ligne, entretien de motivation, réponse rapide. Pas de Parcoursup, pas de barrières inutiles.</p>
+  <div style="display:flex; gap:1.2rem; justify-content:center; flex-wrap:wrap;" class="reveal">
+    <a href="https://keyce-informatique.fr" target="_blank" class="btn-primary">Candidater maintenant</a>
+    <a href="https://keyce-informatique.fr/campus/" target="_blank" class="btn-ghost">Trouver mon campus</a>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <a href="#" class="footer-logo">Keyce <span>Informatique</span></a>
+  <p class="footer-info">© 2026 Keyce Academy · Collège de Paris<br>École certifiée RNCP — Niveaux 6 & 7</p>
+  <nav class="footer-links">
+    <a href="https://keyce-informatique.fr">Site officiel</a>
+    <a href="https://keyce-informatique.fr/bachelor/">Formations</a>
+    <a href="https://keyce-informatique.fr/campus/">Campus</a>
+  </nav>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 60);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
